@@ -51,5 +51,33 @@ namespace SeekSafe.Controllers
             TempData["Msg"] = $"User Deleted Successfully!";
             return RedirectToAction("Index");
         }
+
+        [AllowAnonymous]
+        public ActionResult Register()
+        {
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction("Home");
+
+            return View();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register(UserAccounts u)
+        {
+            // Check model validation
+            if (!ModelState.IsValid)
+            {
+                // If model validation fails, return the registration view with validation errors
+                return View(u);
+            }
+
+            // Save the user to the database
+            _userRepo.Create(u);
+            TempData["Msg"] = $"User {u.username} successfully created!";
+
+            // Redirect to the login page after successful registration
+            return RedirectToAction("Index");
+        }
     }
 }
